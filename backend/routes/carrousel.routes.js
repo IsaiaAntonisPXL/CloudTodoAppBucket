@@ -18,9 +18,11 @@ carrouselRouter.get('', async (req, res) => {
 
         const data = await s3.listObjectsV2(params).promise();
 
-        // Extract the URLs of the images from S3
+        // Extract the URLs of the images from S3 and URL encode the keys
         const imageUrls = data.Contents.map((item) => {
-            return `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${item.Key}`;
+            // URL encode the item.Key to handle special characters (like spaces)
+            const encodedKey = encodeURIComponent(item.Key);
+            return `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodedKey}`;
         });
 
         // Return the image URLs as JSON
